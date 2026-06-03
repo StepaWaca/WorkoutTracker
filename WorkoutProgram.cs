@@ -15,7 +15,11 @@ namespace WorkoutTracker
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
         public int ClientId { get; set; }
+        public virtual Client? Client { get; set; }
+        public virtual ICollection<ProgramExercise> ProgramExercises { get; set; } = new List<ProgramExercise>();
+        public virtual ICollection<Workout> Workouts { get; set; } = new List<Workout>();
     }
 }
