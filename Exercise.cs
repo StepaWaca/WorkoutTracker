@@ -11,9 +11,10 @@
             [Key]
             public int Id { get; set; }
             public string Name { get; set; } = string.Empty;
+            public string Category { get; set; } = string.Empty; // "Силовое", "Кардио", "Растяжка"
             public bool IsActive { get; set; } = true;
             public int ClientId { get; set; }
-            public int? ProgramId { get; set; }
+            public virtual Client? Client { get; set; }
         }
     }
 }
