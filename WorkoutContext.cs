@@ -59,8 +59,6 @@ namespace WorkoutTracker
                 .HasForeignKey(we => we.ExerciseId);
 
             // Индексы
-            modelBuilder.Entity<Activity>().HasIndex(a => a.Date);
-            modelBuilder.Entity<Activity>().HasIndex(a => a.ClientId);
             modelBuilder.Entity<ProgramExercise>().HasIndex(pe => pe.ProgramId);
             modelBuilder.Entity<ProgramExercise>().HasIndex(pe => pe.ExerciseId);
             modelBuilder.Entity<Workout>().HasIndex(w => w.Date);
