@@ -50,11 +50,10 @@ namespace WorkoutTracker
         {
             dtpDate = new DateTimePicker()
             {
-                Location = new Point(800, 15),
+                Location = new Point(400, 14),
                 Size = new Size(120, 250),
                 Format = DateTimePickerFormat.Short,
-                Value = DateTime.Today,
-                Visible = false
+                Value = DateTime.Today
             };
             this.Controls.Add(dtpDate);
 
@@ -368,14 +367,14 @@ namespace WorkoutTracker
             NumericUpDown numReps = new NumericUpDown() { Minimum = 1, Maximum = 100, Value = 10, Location = new Point(120, 65), Size = new Size(80, 25) };
             NumericUpDown numWeight = new NumericUpDown() { Minimum = 0, Maximum = 500, Value = 50, Location = new Point(120, 100), Size = new Size(80, 25) };
             NumericUpDown numDuration = new NumericUpDown() { Minimum = 1, Maximum = 180, Value = 10, Location = new Point(120, 135), Size = new Size(80, 25) };
-            TextBox txtNotes = new TextBox() { Location = new Point(20, 175), Size = new Size(180, 60), Multiline = true };
+            TextBox txtNotes = new TextBox() { Location = new Point(20, 190), Size = new Size(180, 55), Multiline = true };
 
             gbParams.Controls.AddRange(new Control[] {
                 new Label() { Text = "Подходы:", Location = new Point(20, 35), Size = new Size(60, 25) }, numSets,
-                new Label() { Text = "Повторения:", Location = new Point(20, 70), Size = new Size(60, 25) }, numReps,
+                new Label() { Text = "Повторения:", Location = new Point(20, 70), Size = new Size(100, 25) }, numReps,
                 new Label() { Text = "Вес (кг):", Location = new Point(20, 105), Size = new Size(60, 25) }, numWeight,
-                new Label() { Text = "Время (мин):", Location = new Point(20, 140), Size = new Size(70, 25) }, numDuration,
-                new Label() { Text = "Заметки:", Location = new Point(20, 170), Size = new Size(60, 25) }, txtNotes
+                new Label() { Text = "Время (мин):", Location = new Point(20, 140), Size = new Size(100, 16) }, numDuration,
+                new Label() { Text = "Заметки:", Location = new Point(20, 175), Size = new Size(60, 16) }, txtNotes
             });
 
             Button btnAdd = new Button() { Text = "Добавить »", Location = new Point(20, 355), Size = new Size(100, 30) };
@@ -433,7 +432,15 @@ namespace WorkoutTracker
             {
                 if (selectedExercises.Count == 0) { MessageBox.Show("Добавьте хотя бы одно упражнение"); return; }
 
+                DateTime date = dtpDate.Value.Date; 
+
                 int totalDuration = selectedExercises.Sum(ex => ex.Duration);
+
+                if (!CheckDailyLimit(dtpWorkoutDate.Value,totalDuration))
+                {
+                    return;
+                }
+
                 var workout = new Workout
                 {
                     Date = dtpWorkoutDate.Value,
@@ -525,14 +532,14 @@ namespace WorkoutTracker
             NumericUpDown numReps = new NumericUpDown() { Minimum = 1, Maximum = 100, Value = 10, Location = new Point(120, 65), Size = new Size(100, 25) };
             NumericUpDown numWeight = new NumericUpDown() { Minimum = 0, Maximum = 500, Value = 50, Location = new Point(120, 100), Size = new Size(100, 25) };
             NumericUpDown numDuration = new NumericUpDown() { Minimum = 1, Maximum = 180, Value = 10, Location = new Point(120, 135), Size = new Size(100, 25) };
-            TextBox txtExNotes = new TextBox() { Location = new Point(20, 175), Size = new Size(200, 60), Multiline = true };
+            TextBox txtExNotes = new TextBox() { Location = new Point(20, 190), Size = new Size(200, 55), Multiline = true };
 
             gbParams.Controls.AddRange(new Control[] {
         new Label() { Text = "Подходы:", Location = new Point(20, 35), Size = new Size(60, 25) }, numSets,
-        new Label() { Text = "Повторения:", Location = new Point(20, 70), Size = new Size(70, 25) }, numReps,
+        new Label() { Text = "Повторения:", Location = new Point(20, 70), Size = new Size(100, 25) }, numReps,
         new Label() { Text = "Вес (кг):", Location = new Point(20, 105), Size = new Size(70, 25) }, numWeight,
         new Label() { Text = "Время (мин):", Location = new Point(20, 140), Size = new Size(80, 25) }, numDuration,
-        new Label() { Text = "Заметки:", Location = new Point(20, 175), Size = new Size(60, 25) }, txtExNotes
+        new Label() { Text = "Заметки:", Location = new Point(20, 175), Size = new Size(60, 16) }, txtExNotes
     });
 
             Button btnUpdate = new Button() { Text = "Обновить", Location = new Point(20, 245), Size = new Size(100, 30) };
@@ -641,6 +648,12 @@ namespace WorkoutTracker
                 _currentWorkout.Date = dtpDate.Value;
                 _currentWorkout.Notes = txtWorkoutNotes.Text;
                 _currentWorkout.TotalDuration = _currentWorkout.WorkoutExercises.Sum(we => we.Duration);
+
+                if (!CheckDailyLimit(dtpDate.Value, _currentWorkout.TotalDuration, _currentWorkout.Id))
+                {
+                    return;
+                }
+
                 _db.SaveChanges();
 
                 editForm.Close();
@@ -788,7 +801,7 @@ namespace WorkoutTracker
 
             string report = $"ОТЧЕТ ПО ПРОГРАММЕ: {_selectedProgram.Name}\n";
             report += $"Тип: {_selectedProgram.Type}\n";
-            report += new string('=', 50) + "\n\n";
+            report += new string('=', 39) + "\n\n";
             report += $"Всего тренировок: {workouts.Count}\n";
             report += $"Общее время: {workouts.Sum(w => w.TotalDuration)} минут\n\n";
 
@@ -816,7 +829,7 @@ namespace WorkoutTracker
                 .ToList();
 
             string report = $"ОБЩИЙ ОТЧЕТ ДЛЯ: {_currentClient?.FullName}\n";
-            report += new string('=', 50) + "\n\n";
+            report += new string('=', 39) + "\n\n";
             report += $"Всего тренировок: {allWorkouts.Count}\n";
             report += $"Общее время: {allWorkouts.Sum(w => w.TotalDuration)} минут\n\n";
 
@@ -845,7 +858,7 @@ namespace WorkoutTracker
                 .ToList();
 
             string report = $"ОТЧЕТ ЗА {date:dd.MM.yyyy}\n";
-            report += new string('=', 40) + "\n\n";
+            report += new string('=', 39) + "\n\n";
 
             if (workouts.Any())
             {
@@ -868,5 +881,26 @@ namespace WorkoutTracker
 
             MessageBox.Show(report, "Дневной отчет", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        private bool CheckDailyLimit(DateTime date, int additionalMinutes, int? excludeWorkoutId = null)
+        {
+            var workouts = _db.Workouts
+                .Where(w => w.ClientId == _currentClient!.Id && w.Date.Date == date.Date);
+
+            if (excludeWorkoutId.HasValue)
+            {
+                workouts = workouts.Where(w => w.Id != excludeWorkoutId.Value);
+            }
+
+            int totalMinutes = workouts.Sum(w => w.TotalDuration) + additionalMinutes;
+
+            if (totalMinutes > 1440)
+            {
+                MessageBox.Show($"Превышение лимита! За день уже {totalMinutes - additionalMinutes} минут. Лимит 1440 минут.",
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
     }
+
 }
